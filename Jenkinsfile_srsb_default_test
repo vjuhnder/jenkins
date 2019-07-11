@@ -6,6 +6,30 @@ import com.uhnder.shared.*
 import com.uhnder.stages.*
 import com.uhnder.steps.*
 
+class Pipeline extends AbstractPipeline
+{
+    private def script
+    private def timeout
+
+    Pipeline(script, timeout=1440)
+    {
+        super()
+        this.script = script
+        this.timeout = timeout
+    }
+
+    void execute()
+    {
+        this.script.timeout(time: this.timeout)
+        {
+            for(StageInterface stage : this.stages)
+            {
+                this.script.echo stage.step_name
+                stage.execute()
+            }
+        }
+    }
+}
 
 class Stage extends AbstractStage
 {
