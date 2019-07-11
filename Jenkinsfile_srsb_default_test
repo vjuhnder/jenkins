@@ -6,9 +6,6 @@ import com.uhnder.shared.*
 import com.uhnder.stages.*
 import com.uhnder.steps.*
 
-package com.uhnder.stages
-import com.uhnder.stages.AbstractStage
-
 
 class Stage extends AbstractStage
 {
