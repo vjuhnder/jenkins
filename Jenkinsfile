@@ -4,14 +4,20 @@ try
     {
         
     }    
-    stage('build') {
+    stage('stage1') {
         step {
-             echo "Stage2: Hello World!"
+            node('master')
+            {
+                echo "Stage1: Hello World!"
+            }
         }
     }
     stage('stage2') {
         step {
-            echo "Stage2: Hello World!"
+             node('master')
+            {
+                echo "Stage2: Hello World!"
+            }
         }
     }    
 }
