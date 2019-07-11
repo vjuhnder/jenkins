@@ -165,7 +165,10 @@ finally
         node('master')
         {
             currentBuild.displayName = "#${BUILD_NUMBER}: SRS(${SRS_REVISION_ID})"
-            
+            for(int i = 0; i < p.stagenames.size(); ++i)
+             {
+                  this.script.echo p.stagenames.get(i)
+             }
         }
     }
     if(manager.logContains(".*WIP FAILURES FOUND.*")) {
