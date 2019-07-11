@@ -6,8 +6,7 @@ try
     }
     pipeline {
     
-    stages {
-        stage('build') {
+          stage('build') {
                 steps {
                     parallel(
                         a:{
@@ -24,7 +23,7 @@ try
                 echo "Stage2: Hello World!"
             }
         }
-    }
+
     }
     
 }
