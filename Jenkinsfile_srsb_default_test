@@ -83,6 +83,7 @@ try
 catch (e)
 {
     echo 'The Pipeline failed :('
+    echo "${LAST_STAGE_NAME}"
     // HIPCHAT.send(color: 'RED')
     throw e
 }
@@ -93,15 +94,7 @@ finally
         node('master')
         {
             currentBuild.displayName = "#${BUILD_NUMBER}: SRS(${SRS_REVISION_ID})"
-
-            publishHTML (target: [
-              allowMissing: false,
-              alwaysLinkToLastBuild: false,
-              keepAll: true,
-              reportDir: "",
-              reportFiles: 'new_output.html',
-              reportName: "Test report"
-            ])
+            
         }
     }
     if(manager.logContains(".*WIP FAILURES FOUND.*")) {
@@ -109,7 +102,8 @@ finally
     }
     script
     {
-        manager.addShortText("Test pipeline \u2705", "black", "lightgreen", "0px", "white")
+        echo "${LAST_STAGE_NAME}"
+        manager.addShortText("Test ${LAST_STAGE_NAME} \u2705", "black", "lightgreen", "0px", "white")
     }
     
 }
