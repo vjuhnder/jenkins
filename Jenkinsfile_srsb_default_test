@@ -23,7 +23,8 @@ class Stage extends AbstractStage
     @Override
     void execute()
     {
-        this.script.echo env.STAGE_NAME
+        //this.script.echo env.STAGE_NAME
+        this.script.echo this.name
         if (this.parallel)
         {
             this.script.stage(this.name)
