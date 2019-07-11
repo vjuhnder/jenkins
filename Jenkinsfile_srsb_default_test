@@ -10,12 +10,13 @@ class Pipeline extends AbstractPipeline
 {
     private def script
     private def timeout
-
+    public def stagenames
     Pipeline(script, timeout=1440)
     {
         super()
         this.script = script
         this.timeout = timeout
+        this.stagenames = []
     }
 
     void execute()
@@ -23,12 +24,13 @@ class Pipeline extends AbstractPipeline
         this.script.timeout(time: this.timeout)
         {
             for(StageInterface stage : this.stages)
-            {
-                 for(int i = 0; i < stage.step_name.size(); ++i)
+            {                 
+                stage.execute()
+                for(int i = 0; i < stage.step_name.size(); ++i)
                  {
                       this.script.echo stage.step_name.get(i)
+                      stagenames.add(stage.step_name.get(i))
                  }
-                stage.execute()
             }
         }
     }
@@ -63,7 +65,8 @@ class Stage extends AbstractStage
         }
         else
         {
-            def keys = this.steps.keySet() as List
+            def keys = this.steps.keySet() as List            
+            step_name = keys 
             for(int i = 0; i < keys.size(); ++i)
             {
                 // using this.steps.each{} was only running the first element
@@ -71,7 +74,6 @@ class Stage extends AbstractStage
                 this.script.stage(keys.get(i))
                 {
                     this.script.echo keys.get(i)
-                    step_name = keys 
                     this.steps[keys.get(i)]()
                 }
             }
