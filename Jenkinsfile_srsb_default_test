@@ -65,8 +65,7 @@ class Stage extends AbstractStage
         }
         else
         {
-            def keys = this.steps.keySet() as List            
-            step_name = keys 
+            def keys = this.steps.keySet() as List 
             for(int i = 0; i < keys.size(); ++i)
             {
                 // using this.steps.each{} was only running the first element
@@ -74,6 +73,7 @@ class Stage extends AbstractStage
                 this.script.stage(keys.get(i))
                 {
                     this.script.echo keys.get(i)
+                    step_name.add(keys.get(i))
                     this.steps[keys.get(i)]()
                 }
             }
