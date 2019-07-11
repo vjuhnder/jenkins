@@ -83,7 +83,7 @@ try
 catch (e)
 {
     echo 'The Pipeline failed :('
-    echo "${LAST_STAGE_NAME}"
+    echo "${STAGE_NAME}"
     // HIPCHAT.send(color: 'RED')
     throw e
 }
@@ -102,8 +102,8 @@ finally
     }
     script
     {
-        echo "${LAST_STAGE_NAME}"
-        manager.addShortText("Test ${LAST_STAGE_NAME} \u2705", "black", "lightgreen", "0px", "white")
+        echo "${STAGE_NAME}"
+        manager.addShortText("Test ${STAGE_NAME} \u2705", "black", "lightgreen", "0px", "white")
     }
     
 }
