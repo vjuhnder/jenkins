@@ -5,16 +5,18 @@ try
         
     }    
     stage('stage1') {
-        step {
-            node('master')
+        node('master')
+        {
+            step 
             {
                 echo "Stage1: Hello World!"
             }
         }
     }
     stage('stage2') {
-        step {
-             node('master')
+        node('master')
+        {
+            step             
             {
                 echo "Stage2: Hello World!"
             }
