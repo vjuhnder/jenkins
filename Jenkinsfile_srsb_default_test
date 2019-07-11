@@ -41,6 +41,7 @@ class Stage extends AbstractStage
                 // which might be an error with jenkins
                 this.script.stage(keys.get(i))
                 {
+                    this.script.echo keys.get(i)
                     this.steps[keys.get(i)]()
                 }
             }
