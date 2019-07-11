@@ -24,7 +24,10 @@ class Pipeline extends AbstractPipeline
         {
             for(StageInterface stage : this.stages)
             {
-                this.script.echo stage.step_name
+                 for(int i = 0; i < stage.step_name.size(); ++i)
+                 {
+                      this.script.echo stage.step_name.get(i)
+                 }
                 stage.execute()
             }
         }
