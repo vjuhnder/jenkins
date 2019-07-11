@@ -8,14 +8,7 @@ try
     
           stage('build') {
                 step {
-                    parallel(
-                        a:{
-                            echo "Stage1-1: Hello World!"
-                        },
-                        b:{
-                            echo "Stage1-2: Hello World!"
-                        }
-                    )
+                     echo "Stage2: Hello World!"
                 }
         }
         stage('stage2') {
