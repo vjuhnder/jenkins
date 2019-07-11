@@ -3,22 +3,17 @@ try
     node('master')
     {
         
-    }
-    pipeline {
-    
-          stage('build') {
-                step {
-                     echo "Stage2: Hello World!"
-                }
+    }    
+    stage('build') {
+        step {
+             echo "Stage2: Hello World!"
         }
-        stage('stage2') {
-            step {
-                echo "Stage2: Hello World!"
-            }
-        }
-
     }
-    
+    stage('stage2') {
+        step {
+            echo "Stage2: Hello World!"
+        }
+    }    
 }
 catch (e)
 {
