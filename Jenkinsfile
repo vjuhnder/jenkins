@@ -4,7 +4,26 @@ try
     {
         
     }
-    echo path
+    stages {
+        stage('build') {
+                steps {
+                    parallel(
+                        a:{
+                            echo "Stage1-1: Hello World!"
+                        },
+                        b:{
+                            echo "Stage1-2: Hello World!"
+                        }
+                    )
+                }
+        }
+        stage('stage2') {
+            steps {
+                echo "Stage2: Hello World!"
+            }
+        }
+
+    }
     
 }
 catch (e)
