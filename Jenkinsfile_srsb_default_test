@@ -51,9 +51,7 @@ try
     SRS_REVISION_ID = srs_repo.get_rev_id()
     p << new Stage('RepoUpdateStep', this)
         .addStep(scc_repo)
-    SCC_REVISION_ID = scc_repo.get_rev_id()           
-    p << new Stage('RepoUpdateStep', this)
-        .addStep(jenkins_repo)
+    SCC_REVISION_ID = scc_repo.get_rev_id() 
     p << new Stage('RepoUpdateStep', this)
         .addStep(jrt_repo)
     p << new Stage('RepoUpdateStep', this)
@@ -102,7 +100,7 @@ finally
     }
     script
     {
-        echo "${STAGE_NAME}"
+        echo env.STAGE
         manager.addShortText("Test ${STAGE_NAME} \u2705", "black", "lightgreen", "0px", "white")
     }
     
