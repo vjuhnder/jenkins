@@ -6,7 +6,49 @@ import com.uhnder.shared.*
 import com.uhnder.stages.*
 import com.uhnder.steps.*
 
+package com.uhnder.stages
+import com.uhnder.stages.AbstractStage
 
+
+class Stage extends AbstractStage
+{
+    protected def script
+    protected def parallel
+
+    Stage(name, script, parallel=false)
+    // (String, Object, Boolean)
+    {
+        super(name)
+        this.script = script
+        this.parallel = parallel
+    }
+
+    @Override
+    void execute()
+    {
+        echo env.STAGE_NAME
+        if (this.parallel)
+        {
+            this.script.stage(this.name)
+            {
+                this.script.parallel this.steps
+            }
+        }
+        else
+        {
+            def keys = this.steps.keySet() as List
+            for(int i = 0; i < keys.size(); ++i)
+            {
+                // using this.steps.each{} was only running the first element
+                // which might be an error with jenkins
+                this.script.stage(keys.get(i))
+                {
+                    this.steps[keys.get(i)]()
+                }
+            }
+        }
+    }
+}
 // def HIPCHAT = new HipchatSmokeTest(this)
 
 
@@ -81,7 +123,6 @@ try
 catch (e)
 {
     echo 'The Pipeline failed :('
-    echo "${STAGE_NAME}"
     // HIPCHAT.send(color: 'RED')
     throw e
 }
@@ -100,8 +141,7 @@ finally
     }
     script
     {
-        echo env.STAGE
-        manager.addShortText("Test ${STAGE_NAME} \u2705", "black", "lightgreen", "0px", "white")
+        manager.addShortText("Test \u2705", "black", "lightgreen", "0px", "white")
     }
     
 }
