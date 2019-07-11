@@ -18,7 +18,7 @@ finally
     {
         node('master')
         {
-            currentBuild.displayName = "#${BUILD_NUMBER}: SRS(${SRS_REVISION_ID})"
+            currentBuild.displayName = "#${BUILD_NUMBER}  "
         }
     }
     script 
