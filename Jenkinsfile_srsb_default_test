@@ -94,7 +94,14 @@ finally
         {
             currentBuild.displayName = "#${BUILD_NUMBER}: SRS(${SRS_REVISION_ID})"
 
-            
+            publishHTML (target: [
+              allowMissing: false,
+              alwaysLinkToLastBuild: false,
+              keepAll: true,
+              reportDir: "",
+              reportFiles: 'new_output.html',
+              reportName: "Test report"
+            ])
         }
     }
     if(manager.logContains(".*WIP FAILURES FOUND.*")) {
