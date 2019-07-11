@@ -11,15 +11,17 @@ class Stage extends AbstractStage
 {
     protected def script
     protected def parallel
-
+    public def step_name
+        
     Stage(name, script, parallel=false)
     // (String, Object, Boolean)
     {
         super(name)
         this.script = script
         this.parallel = parallel
+        this.step_name = [:]
     }
-
+   
     @Override
     void execute()
     {
@@ -42,6 +44,7 @@ class Stage extends AbstractStage
                 this.script.stage(keys.get(i))
                 {
                     this.script.echo keys.get(i)
+                    step_name.add(keys.get(i)) 
                     this.steps[keys.get(i)]()
                 }
             }
@@ -91,42 +94,23 @@ try
     p << new Stage('RepoUpdateStep', this)
         .addStep(srs_repo)
     SRS_REVISION_ID = srs_repo.get_rev_id()
-    last_stage_name = srs_repo.getName()
-    echo last_stage_name
     p << new Stage('RepoUpdateStep', this)
         .addStep(scc_repo)
     SCC_REVISION_ID = scc_repo.get_rev_id() 
-    last_stage_name = scc_repo.getName()
-    echo last_stage_name
     p << new Stage('RepoUpdateStep', this)
         .addStep(jrt_repo)
-    last_stage_name = jrt_repo.getName()
-    echo last_stage_name
     p << new Stage('RepoUpdateStep', this)
         .addStep(sra_repo)    
-    last_stage_name = sra_repo.getName()
-    echo last_stage_name
     SRA_REVISION_ID = sra_repo.get_rev_id()
     p << new Stage('RepoUpdateStep', this)
         .addStep(sbu_s_repo)
     SBUS_REVISION_ID = sbu_s_repo.get_rev_id()
-    last_stage_name = sbu_s_repo.getName()
-    echo last_stage_name
-    def bld_sab = new BuildSrsStep(this,SRS_REVISION_ID, path,"x86_linux", "sabineB", "gtest","")
     p << new Stage('Building Sabine', this)
-        .addStep(bld_sab)
-    last_stage_name = bld_sab.getName()
-    echo last_stage_name
-    def bld_sra = new BuildSraStep(this)
+        .addStep(new BuildSrsStep(this,SRS_REVISION_ID, path,"x86_linux", "sabineB", "gtest",""))
     p << new Stage('Building Sabine SRA', this)
-        .addStep(bld_sra)
-    last_stage_name = bld_sra.getName()
-    echo last_stage_name
-    def reg_test = new RegressionX86Step(this,'../../../jenkins-regression-tests/regression-suites/sabineB-linux-x86', 'wherever', env.WORKSPACE, "${BUILD_URL}", SRS_REVISION_ID, SCC_REVISION_ID, SBU_SHARED_REVISION_ID, 'revb-x86-smoketest')
+        .addStep(new BuildSraStep(this))
     p << new Stage('Regression Testing', this)
-        .addStep(reg_test)
-    last_stage_name = reg_test.getName()
-    echo last_stage_name
+        .addStep(new RegressionX86Step(this,'../../../jenkins-regression-tests/regression-suites/sabineB-linux-x86', 'wherever', env.WORKSPACE, "${BUILD_URL}", SRS_REVISION_ID, SCC_REVISION_ID, SBU_SHARED_REVISION_ID, 'revb-x86-smoketest'))
     p.execute()
 
     srs_repo = null 
