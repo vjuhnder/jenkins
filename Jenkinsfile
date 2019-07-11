@@ -4,6 +4,8 @@ try
     {
         
     }
+    pipeline {
+    agent { label 'master' }
     stages {
         stage('build') {
                 steps {
@@ -22,7 +24,7 @@ try
                 echo "Stage2: Hello World!"
             }
         }
-
+    }
     }
     
 }
