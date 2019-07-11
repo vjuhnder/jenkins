@@ -7,21 +7,9 @@ try
     stage('stage1') {
         node('master')
         {
-            step 
-            {
-                echo "Stage1: Hello World!"
-            }
+            echo "Stage1: Hello World!"
         }
     }
-    stage('stage2') {
-        node('master')
-        {
-            step             
-            {
-                echo "Stage2: Hello World!"
-            }
-        }
-    }    
 }
 catch (e)
 {
