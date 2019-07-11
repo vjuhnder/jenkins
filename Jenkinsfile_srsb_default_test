@@ -35,7 +35,7 @@ class Stage extends AbstractStage
 {
     protected def script
     protected def parallel
-    public def step_name as list
+    public def step_name as List
         
     Stage(name, script, parallel=false)
     // (String, Object, Boolean)
@@ -43,7 +43,7 @@ class Stage extends AbstractStage
         super(name)
         this.script = script
         this.parallel = parallel
-        this.step_name = [:]
+        this.step_name = []
     }
    
     @Override
