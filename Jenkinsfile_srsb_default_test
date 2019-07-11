@@ -89,6 +89,7 @@ try
     p << new Stage('RepoUpdateStep', this)
         .addStep(srs_repo)
     SRS_REVISION_ID = srs_repo.get_rev_id()
+    echo srs_repo.getName()
     p << new Stage('RepoUpdateStep', this)
         .addStep(scc_repo)
     SCC_REVISION_ID = scc_repo.get_rev_id() 
