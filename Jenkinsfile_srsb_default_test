@@ -1,4 +1,4 @@
-***#!groovy
+#!groovy
 @Library('libs@default')
 import com.uhnder.helpers.*
 import com.uhnder.pipelines.*
