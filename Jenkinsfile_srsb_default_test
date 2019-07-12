@@ -135,10 +135,10 @@ try
 //    p << new Stage('RepoUpdateStep', this)
 //        .addStep(sbu_s_repo)
 //    SBUS_REVISION_ID = sbu_s_repo.get_rev_id()
-    p << new Stage('Building Sabine', this)
-        .addStep(new BuildSrsStep(this,SRS_REVISION_ID, path,"x86_linux", "sabineB", "gtest",""))
-    p << new Stage('Building Sabine SRA', this)
-        .addStep(new BuildSraStep(this))
+//    p << new Stage('Building Sabine', this)
+//        .addStep(new BuildSrsStep(this,SRS_REVISION_ID, path,"x86_linux", "sabineB", "gtest",""))
+//    p << new Stage('Building Sabine SRA', this)
+//        .addStep(new BuildSraStep(this))
     p << new Stage('Regression Testing', this)
         .addStep(new RegressionX86Step(this,'../../../jenkins-regression-tests/regression-suites/sabineB-linux-x86', 'wherever', env.WORKSPACE, "${BUILD_URL}", SRS_REVISION_ID, SCC_REVISION_ID, SBU_SHARED_REVISION_ID, 'revb-x86-smoketest'))
     p.execute()
@@ -168,7 +168,7 @@ finally
             currentBuild.displayName = "#${BUILD_NUMBER}: SRS(${SRS_REVISION_ID})"
             for(int i = 0; i < p.stagenames.size(); ++i)
              {
-                  this.script.echo p.stagenames.get(i)
+                  echo p.stagenames.get(i)
              }
         }
     }
