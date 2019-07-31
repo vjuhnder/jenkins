@@ -1,3 +1,6 @@
+/* import shared library */
+@Library('jenkins-shared-library')_
+
 try
 {
     node('master')
@@ -23,6 +26,9 @@ finally
         node('master')
         {
             currentBuild.displayName = "#${BUILD_NUMBER}  "
+            
+            /* Use slackNotifier.groovy from shared library and provide current build result as parameter */   
+            slackNotifier(currentBuild.currentResult)
         }
     }
     script 
