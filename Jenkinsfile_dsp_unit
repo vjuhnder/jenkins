@@ -1,0 +1,165 @@
+#!groovy
+@Library('libs@default')
+import com.uhnder.helpers.*
+import com.uhnder.pipelines.*
+import com.uhnder.shared.*
+import com.uhnder.stages.*
+import com.uhnder.steps.*
+
+class Pipeline extends AbstractPipeline
+{
+    private def script
+    private def timeout
+    public def stagenames
+    Pipeline(script, timeout=1440)
+    {
+        super()
+        this.script = script
+        this.timeout = timeout
+        this.stagenames = []
+    }
+
+    void execute()
+    {
+        this.script.timeout(time: this.timeout)
+        {
+            for(StageInterface stage : this.stages)
+            {                 
+                stage.execute()
+                for(int i = 0; i < stage.step_name.size(); ++i)
+                 {
+                      this.script.echo stage.step_name.get(i)
+                      stagenames.add(stage.step_name.get(i))
+                 }
+            }
+        }
+    }
+}
+
+class Stage extends AbstractStage
+{
+    protected def script
+    protected def parallel
+    public def step_name
+        
+    Stage(name, script, parallel=false)
+    // (String, Object, Boolean)
+    {
+        super(name)
+        this.script = script
+        this.parallel = parallel
+        this.step_name = []
+    }
+   
+    @Override
+    void execute()
+    {
+        //this.script.echo env.STAGE_NAME
+        //this.script.echo this.name
+        if (this.parallel)
+        {
+            this.script.stage(this.name)
+            {
+                this.script.parallel this.steps
+            }
+        }
+        else
+        {
+            def keys = this.steps.keySet() as List 
+            for(int i = 0; i < keys.size(); ++i)
+            {
+                // using this.steps.each{} was only running the first element
+                // which might be an error with jenkins
+                this.script.stage(keys.get(i))
+                {
+                    this.script.echo keys.get(i)
+                    step_name.add(keys.get(i))
+                    this.steps[keys.get(i)]()
+                }
+            }
+        }
+    }
+}
+
+def SRS_REVISION_ID
+def SRA_REVISION_ID
+def last_stage_name
+def p
+
+properties([
+    parameters([
+        string( defaultValue: 'default',
+                description: 'Specify a changeset (hash) to checkout',
+                name: 'SRS_CHANGESET'),
+    ]),
+    buildDiscarder(logRotator(artifactDaysToKeepStr: '3', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: ''))
+])
+
+try
+{
+    def srs_repo  = new RepoUpdateStep(this, "system-radar-software", "https://bitbucket.org/uhnder/", params.SRS_CHANGESET)
+    def jenkins_repo = new RepoUpdateStep(this, "jenkins", "https://bitbucket.org/uhnder/", "default")
+    def jrt_repo = new RepoUpdateStep(this, "jenkins-regression-tests", "https://bitbucket.org/uhnder/", "default")
+    def sra_repo = new RepoUpdateStep(this, "radar-remote-api", "https://bitbucket.org/uhnder/", "default")
+    def path
+    
+    node('master')
+    {
+        path = sh (
+            script: 'python2.7 ../'+env.JOB_NAME+'@script/scripts/path.py',
+            returnStdout: true
+        ).trim()
+    }
+    echo path
+    
+    
+    p = new Pipeline(this, 60)
+    p << new Stage('RepoUpdateStep', this)
+        .addStep(srs_repo)
+    SRS_REVISION_ID = srs_repo.get_rev_id()
+    p << new Stage('RepoUpdateStep', this)
+        .addStep(jrt_repo)
+    p << new Stage('RepoUpdateStep', this)
+        .addStep(sra_repo)    
+    SRA_REVISION_ID = sra_repo.get_rev_id()
+    p << new Stage('Building SRS', this)
+        .addStep(new BuildSrsStep(this,SRS_REVISION_ID, path,"x86_linux", "", "",""))
+    p << new Stage('Building RRA', this)
+        .addStep(new BuildSraStep(this))
+    p << new Stage('DSP unit test', this)
+        .addStep(new RegressionX86Step(this,'../../../jenkins-regression-tests/regression-suites/dsp-unit-tests', 'wherever', env.WORKSPACE, "${BUILD_URL}", SRS_REVISION_ID, SCC_REVISION_ID, '', 'revb-x86-smoketest'))
+    p.execute()
+
+    srs_repo = null 
+    jenkins_repo = null
+    jrt_repo = null 
+    sra_repo = null 
+}
+catch (e)
+{
+    echo 'The Pipeline failed :('
+    throw e
+}
+finally
+{
+    stage('Build Naming')
+    {
+        node('master')
+        {
+            currentBuild.displayName = "#${BUILD_NUMBER}: SRS(${SRS_REVISION_ID})"
+            for(int i = 0; i < p.stagenames.size(); ++i)
+             {
+                  echo p.stagenames.get(i)
+             }
+            last_stage_name = p.stagenames.get(p.stagenames.size() - 1)
+        }
+    }
+    if(manager.logContains(".*WIP FAILURES FOUND.*")) {
+        manager.buildUnstable()
+    }
+    script
+    {
+        manager.addShortText("$last_stage_name \u2705", "black", "lightgreen", "0px", "white")
+    }
+    
+}
