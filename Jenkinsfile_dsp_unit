@@ -147,11 +147,11 @@ finally
         node('master')
         {
             currentBuild.displayName = "#${BUILD_NUMBER}: SRS(${SRS_REVISION_ID})"
-            for(int i = 0; i < p.stagenames.size(); ++i)
-             {
-                  echo p.stagenames.get(i)
-             }
-            last_stage_name = p.stagenames.get(p.stagenames.size() - 1)
+            //for(int i = 0; i < p.stagenames.size(); ++i)
+            // {
+            //      echo p.stagenames.get(i)
+            // }
+            //last_stage_name = p.stagenames.get(p.stagenames.size() - 1)
         }
     }
     if(manager.logContains(".*WIP FAILURES FOUND.*")) {
@@ -159,7 +159,7 @@ finally
     }
     script
     {
-        manager.addShortText("$last_stage_name \u2705", "black", "lightgreen", "0px", "white")
+        //manager.addShortText("$last_stage_name \u2705", "black", "lightgreen", "0px", "white")
     }
     
 }
